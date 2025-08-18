@@ -1,7 +1,13 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+
+    // Maven publish
+    alias(libs.plugins.maven.publish)
+    id("signing") // GPG 서명을 위한 플러그인 추가
 }
 
 kotlin {
@@ -13,15 +19,6 @@ kotlin {
         namespace = "kr.co.hs.kmp.data"
         compileSdk = 36
         minSdk = 24
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
     }
 
     // For iOS targets, this is also where you should
@@ -57,17 +54,14 @@ kotlin {
     // common to share sources between related targets.
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
-        commonMain {
-            dependencies {
-                implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
-            }
-        }
+        commonMain.dependencies {
+            // Add KMP dependencies here
+            implementation(libs.ktor.serialization.kotlinx.json)
 
-        commonTest {
-            dependencies {
-                implementation(libs.kotlin.test)
-            }
+            // define the BOM and its version
+            implementation(project.dependencies.platform(libs.kotlincrypto.hash))
+            // MD5
+            implementation(libs.kotlincrypto.hash.md5)
         }
 
         androidMain {
@@ -75,14 +69,6 @@ kotlin {
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
-            }
-        }
-
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.testExt.junit)
             }
         }
 
@@ -98,3 +84,84 @@ kotlin {
     }
 
 }
+
+val mavenCentralGroupId = "io.github.hsbaewa"
+val mavenCentralArtifactId = "ca-kmp-data"
+val mavenCentralVersion = "0.0.1"
+
+// Maven 그룹 및 버전 설정
+group = mavenCentralGroupId
+version = mavenCentralVersion
+
+tasks.withType(Javadoc::class) {
+    options {
+        encoding = "UTF-8"
+    }
+}
+
+//region Fix Gradle warning about signing tasks using publishing task outputs without explicit dependencies
+// <https://youtrack.jetbrains.com/issue/KT-46466>
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    val signingTasks = tasks.withType<Sign>()
+    mustRunAfter(signingTasks)
+}
+//endregion
+
+signing {
+    sign(publishing.publications)
+    useGpgCmd() // 이거 있으면 signAllPublications() 필요 없음.
+}
+
+mavenPublishing {
+//    signAllPublications() // Gpg 서명을 위한 설정
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL) // 포탈로 등록 할거기 때문에 타입 추가
+
+    coordinates(
+        mavenCentralGroupId,
+        mavenCentralArtifactId,
+        mavenCentralVersion
+    ) // 네임 스페이스, 라이브러리 이름, 버전 순서로 작성
+
+    // POM 설정
+    pom {
+        /**
+        name = '[라이브러리 이름]'
+        description = '[라이브러리 설명]'
+        url = '[오픈소스 Repository Url]'
+         */
+        name = mavenCentralArtifactId
+        description = "Clean Architecture data library"
+        url = "https://github.com/hsbaewa/$mavenCentralArtifactId"
+        inceptionYear = "2025"
+
+        // 라이선스 정보
+        licenses {
+            license {
+                name = "Apache License"
+                url = "https://github.com/hsbaewa/$mavenCentralArtifactId/blob/main/LICENSE"
+            }
+        }
+
+        // 개발자 정보
+        developers {
+            developer {
+                id = "hsbaewa"
+                name = "Development guy"
+                email = "hsbaewa@gmail.com"
+            }
+            // 다른 개발자 정보 추가 가능...
+        }
+
+        /**
+        connection = 'scm:git:github.com/[Github 사용자명]/[오픈소스 Repository 이름].git'
+        developerConnection = 'scm:git:ssh://github.com/[Github 사용자명]/[오픈소스 Repository 이름].git'
+        url = '<https://github.com/>[Github 사용자명]/[오픈소스 Repository 이름]/tree/[배포 브랜치명]'
+         */
+        scm {
+            connection = "scm:git:github.com/hsbaewa/$mavenCentralArtifactId"
+            developerConnection = "scm:git:ssh://github.com:hsbaewa/$mavenCentralArtifactId.git"
+            url = "https://github.com/hsbaewa/$mavenCentralArtifactId/tree/main"
+        }
+    }
+}
+

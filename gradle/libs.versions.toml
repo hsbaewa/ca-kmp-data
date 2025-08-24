@@ -26,6 +26,9 @@ maven-publish = "0.28.0"
 # kotlincrypto #
 kotlincrypto-hash = "0.7.0"
 
+# Date / Time #
+datetime = "0.7.1"
+
 [libraries]
 # Networking - ktor #
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -45,6 +48,9 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 # kotlincrypto #
 kotlincrypto-hash = { group = "org.kotlincrypto.hash", name = "bom", version.ref = "kotlincrypto-hash" }
 kotlincrypto-hash-md5 = { group = "org.kotlincrypto.hash", name = "md" }
+
+# Date / Time #
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "datetime" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

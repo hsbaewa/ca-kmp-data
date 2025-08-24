@@ -62,6 +62,9 @@ kotlin {
             implementation(project.dependencies.platform(libs.kotlincrypto.hash))
             // MD5
             implementation(libs.kotlincrypto.hash.md5)
+
+            // DateTime
+            implementation(libs.kotlinx.datetime)
         }
 
         androidMain {
@@ -87,7 +90,7 @@ kotlin {
 
 val mavenCentralGroupId = "io.github.hsbaewa"
 val mavenCentralArtifactId = "ca-kmp-data"
-val mavenCentralVersion = "0.0.1"
+val mavenCentralVersion = "0.0.2"
 
 // Maven 그룹 및 버전 설정
 group = mavenCentralGroupId

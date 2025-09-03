@@ -41,7 +41,8 @@ object StringExtension {
         val dateTime = LocalDateTime.parse(strDate, LocalDateTime.Formats.ISO)
             .toInstant(TimeZone.UTC)
         val offsetTime = LocalTime.Format { byUnicodePattern("HH:mm") }
-            .parse(substring(20, length))
+            .runCatching { parse(substring(20, length)) }
+            .getOrDefault(LocalTime.fromSecondOfDay(0))
         return when (this[19]) {
             '+' -> dateTime
                 .minus(offsetTime.hour, DateTimeUnit.HOUR)

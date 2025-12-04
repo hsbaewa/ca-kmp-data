@@ -1,14 +1,10 @@
 package kr.co.hs.kmp.data.extension
 
 import io.ktor.utils.io.core.toByteArray
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
+import kotlinx.datetime.format.parse
 import kotlinx.datetime.toInstant
 import org.kotlincrypto.hash.md.MD5
 import kotlin.time.ExperimentalTime
@@ -36,25 +32,16 @@ object StringExtension {
     }.getOrNull()
 
     @OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
-    fun String.toISO8601Instant(): Instant? {
-        val strDate = substring(0, 19)
-        val dateTime = LocalDateTime.parse(strDate, LocalDateTime.Formats.ISO)
-            .toInstant(TimeZone.UTC)
-        val offsetTime = LocalTime.Format { byUnicodePattern("HH:mm") }
-            .runCatching { parse(substring(20, length)) }
-            .getOrDefault(LocalTime.fromSecondOfDay(0))
-        return when (this[19]) {
-            '+' -> dateTime
-                .minus(offsetTime.hour, DateTimeUnit.HOUR)
-                .minus(offsetTime.minute, DateTimeUnit.MINUTE)
+    fun String.toISO8601Instant(): Instant = toISO8601DateTimeComponents()
+        .run { toLocalDateTime().toInstant(toUtcOffset()) }
 
-            '-' -> dateTime
-                .plus(offsetTime.hour, DateTimeUnit.HOUR)
-                .plus(offsetTime.minute, DateTimeUnit.MINUTE)
+    fun String.toISO8601DateTimeComponents(): DateTimeComponents = DateTimeComponents.parse(
+        this,
+        DateTimeComponents.Formats.ISO_DATE_TIME_OFFSET
+    )
 
-            else -> dateTime
-        }
-    }
+    fun String.toISO8601LocalDateTime(): LocalDateTime =
+        toISO8601DateTimeComponents().toLocalDateTime()
 }
 
 @OptIn(ExperimentalTime::class)

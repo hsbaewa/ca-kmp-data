@@ -1,33 +1,33 @@
 [versions]
-agp = "8.13.1"
-android-compileSdk = "35"
+agp = "9.4.1"
+android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "35"
-androidx-activity = "1.12.0"
-androidx-appcompat = "1.7.1"
-androidx-core = "1.17.0"
+androidx-activity = "1.13.0"
+androidx-appcompat = "1.8.0"
+androidx-core = "1.19.1"
 androidx-espresso = "3.7.0"
-androidx-lifecycle = "2.9.6"
+androidx-lifecycle = "2.11.0"
 androidx-testExt = "1.3.0"
-composeMultiplatform = "1.9.3"
+composeMultiplatform = "1.12.1"
 junit = "4.13.2"
-kotlin = "2.2.21"
+kotlin = "2.4.20"
 
 # Networking - ktor #
-ktor = "3.3.3"
-ktorfit = "2.6.5"
+ktor = "3.6.0"
+ktorfit = "2.7.5"
 
 # Coroutine #
-coroutineVersion = "1.10.2"
+coroutineVersion = "1.11.0"
 
 # Maven Central #
 maven-publish = "0.28.0"
 
 # kotlincrypto #
-kotlincrypto-hash = "0.7.0"
+kotlincrypto-hash = "0.8.0"
 
 # Date / Time #
-datetime = "0.7.1"
+datetime = "0.8.0"
 
 [libraries]
 # Networking - ktor #

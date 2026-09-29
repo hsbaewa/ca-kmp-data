@@ -17,8 +17,8 @@ kotlin {
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
         namespace = "kr.co.hs.kmp.data"
-        compileSdk = 36
-        minSdk = 24
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     // For iOS targets, this is also where you should
@@ -29,12 +29,6 @@ kotlin {
     // project can be found here:
     // https://developer.android.com/kotlin/multiplatform/migrate
     val xcfName = "dataKit"
-
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
-        }
-    }
 
     iosArm64 {
         binaries.framework {
@@ -90,7 +84,7 @@ kotlin {
 
 val mavenCentralGroupId = "io.github.hsbaewa"
 val mavenCentralArtifactId = "ca-kmp-data"
-val mavenCentralVersion = "0.0.4"
+val mavenCentralVersion = "0.1.1"
 
 // Maven 그룹 및 버전 설정
 group = mavenCentralGroupId
